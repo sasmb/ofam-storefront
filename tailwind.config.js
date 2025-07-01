@@ -34,6 +34,38 @@ module.exports = {
           80: "#1F2937",
           90: "#111827",
         },
+        // OFAM Brand Colors
+        brand: {
+          primary: "#677D3F",    // Brand green
+          secondary: "#F38D27",  // Brand orange
+          dark: "#1A1A1A",       // Brand dark gray/black
+          light: "#FFFAFA",      // Brand off-white/cream
+        },
+        // Additional shades for better utility
+        green: {
+          50: "#f0f4ec",
+          100: "#dde7d0", 
+          200: "#c7d5ad",
+          300: "#a8be83",
+          400: "#8ba660",
+          500: "#677D3F", // Brand primary
+          600: "#5a6e37",
+          700: "#4a5a2d",
+          800: "#3d4826",
+          900: "#343d22",
+        },
+        orange: {
+          50: "#fef6ed",
+          100: "#fce9d4",
+          200: "#f8cfa8",
+          300: "#F38D27", // Brand secondary
+          400: "#ed7c1a",
+          500: "#e1630a",
+          600: "#d14a06",
+          700: "#ae3708",
+          800: "#8b2c0c",
+          900: "#73260d",
+        },
       },
       borderRadius: {
         none: "0px",

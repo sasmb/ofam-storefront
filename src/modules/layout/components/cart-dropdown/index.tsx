@@ -9,6 +9,7 @@ import {
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@medusajs/ui"
+import { ShoppingBag } from "@medusajs/icons"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
@@ -81,11 +82,18 @@ const CartDropdown = ({
     >
       <Popover className="relative h-full">
         <PopoverButton className="h-full">
-          <LocalizedClientLink
-            className="hover:text-ui-fg-base"
-            href="/cart"
-            data-testid="nav-cart-link"
-          >{`Cart (${totalItems})`}</LocalizedClientLink>
+          <div className="group relative hover:text-brand-secondary transition-all duration-300 flex items-center gap-2 p-3 rounded-full hover:bg-white/50 border border-transparent hover:border-brand-primary/20 cursor-pointer">
+            <div className="relative">
+              <ShoppingBag className="w-8 h-8 transition-transform duration-200 group-hover:scale-110 text-brand-primary" />
+              <div className="absolute inset-0 rounded-full bg-brand-secondary/20 scale-0 group-hover:scale-100 transition-transform duration-200"></div>
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-brand-secondary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold min-w-5 text-center leading-none">
+                  {totalItems}
+                </span>
+              )}
+            </div>
+            <span className="sr-only">{`Cart (${totalItems})`}</span>
+          </div>
         </PopoverButton>
         <Transition
           show={cartDropdownOpen}

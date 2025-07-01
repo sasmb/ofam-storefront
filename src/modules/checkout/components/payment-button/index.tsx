@@ -1,12 +1,31 @@
 "use client"
 
-import { isManual, isStripe } from "@lib/constants"
+import { isManual, isPaystack, isStripe } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@medusajs/ui"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
 import React, { useState } from "react"
+import dynamic from "next/dynamic"
+
+// Dynamically import PaystackConsumer to prevent SSR issues
+const PaystackConsumer = dynamic(
+  () => import("react-paystack").then((mod) => ({ default: mod.PaystackConsumer })),
+  { 
+    ssr: false,
+    loading: () => (
+      <Button disabled size="large">
+        Loading payment...
+      </Button>
+    )
+  }
+)
+
 import ErrorMessage from "../error-message"
+
+// Type definitions for react-paystack callbacks
+type PaystackCallback = (response: any) => void
+type PaystackCloseCallback = () => void
 
 type PaymentButtonProps = {
   cart: HttpTypes.StoreCart
@@ -38,6 +57,10 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
     case isManual(paymentSession?.provider_id):
       return (
         <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} />
+      )
+    case isPaystack(paymentSession?.provider_id):
+      return (
+        <PaystackPaymentButton notReady={notReady} cart={cart} data-testid={dataTestId} />
       )
     default:
       return <Button disabled>Select a payment method</Button>
@@ -140,6 +163,7 @@ const StripePaymentButton = ({
         size="large"
         isLoading={submitting}
         data-testid={dataTestId}
+        className="bg-brand-primary hover:bg-green-600 text-white border-0"
       >
         Place order
       </Button>
@@ -179,12 +203,143 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
         onClick={handlePayment}
         size="large"
         data-testid="submit-order-button"
+        className="bg-brand-primary hover:bg-green-600 text-white border-0"
       >
         Place order
       </Button>
       <ErrorMessage
         error={errorMessage}
         data-testid="manual-payment-error-message"
+      />
+    </>
+  )
+}
+
+const PaystackPaymentButton = ({
+  cart,
+  notReady,
+  "data-testid": dataTestId,
+}: {
+  cart: HttpTypes.StoreCart
+  notReady: boolean
+  "data-testid"?: string
+}) => {
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const paymentSession = cart.payment_collection?.payment_sessions?.find(
+    (s) => s.status === "pending"
+  )
+
+  // Get payment configuration from session
+  const paystackConfig = {
+    reference: paymentSession?.data.reference as string,
+    email: cart.email as string,
+    amount: (cart.total ?? 0) * 100, // Paystack expects amount in kobo (cents)
+    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY as string,
+    currency: cart.currency_code?.toUpperCase() || "NGN",
+    channels: ["card", "bank", "ussd", "qr", "mobile_money", "bank_transfer"],
+  }
+
+  const onPaymentCompleted = async () => {
+    await placeOrder()
+      .catch((err) => {
+        setErrorMessage(err.message)
+      })
+      .finally(() => {
+        setSubmitting(false)
+      })
+  }
+
+  const onSuccess: PaystackCallback = async (response) => {
+    console.log("Paystack payment successful:", response)
+    setSubmitting(true)
+    
+    try {
+      // First, authorize the payment session with Paystack reference
+      await fetch('/api/complete-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          cartId: cart.id,
+          paystackReference: response.reference || response.trans || '',
+          action: 'authorize'
+        })
+      })
+      
+      // Then place the order using standard Medusa flow
+      await placeOrder()
+    } catch (error) {
+      console.error("Failed to complete order:", error)
+      setErrorMessage("Payment successful but order completion failed. Please contact support with reference: " + (response.reference || response.trans))
+      setSubmitting(false)
+    }
+  }
+
+  const onClose: PaystackCloseCallback = () => {
+    console.log("Paystack payment modal closed")
+    setSubmitting(false)
+    // Handle payment cancellation - show message to user
+    setErrorMessage("Payment was cancelled. Please try again if you want to complete your order.")
+  }
+
+  if (!paymentSession) {
+    return (
+      <>
+        <Button disabled size="large">
+          Payment session not found
+        </Button>
+        <ErrorMessage
+          error="Payment session not available"
+          data-testid="paystack-payment-error-message"
+        />
+      </>
+    )
+  }
+
+  if (!paystackConfig.publicKey) {
+    return (
+      <>
+        <Button disabled size="large">
+          Payment not configured
+        </Button>
+        <ErrorMessage
+          error="Paystack payment is not properly configured"
+          data-testid="paystack-payment-error-message"
+        />
+      </>
+    )
+  }
+
+  return (
+    <>
+      <PaystackConsumer 
+        {...paystackConfig} 
+        onSuccess={onSuccess as any} 
+        onClose={onClose as any}
+      >
+        {({ initializePayment }) => (
+          <Button
+            disabled={notReady}
+            isLoading={submitting}
+            onClick={() => {
+              setSubmitting(true)
+              setErrorMessage(null)
+              initializePayment()
+            }}
+            size="large"
+            data-testid={dataTestId}
+            className="bg-brand-secondary hover:bg-orange-400 text-white border-0"
+          >
+            {submitting ? "Processing payment..." : "Pay with Paystack"}
+          </Button>
+        )}
+      </PaystackConsumer>
+      <ErrorMessage
+        error={errorMessage}
+        data-testid="paystack-payment-error-message"
       />
     </>
   )

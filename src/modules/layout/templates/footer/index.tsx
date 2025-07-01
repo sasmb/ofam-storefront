@@ -12,21 +12,28 @@ export default async function Footer() {
   const productCategories = await listCategories()
 
   return (
-    <footer className="border-t border-ui-border-base w-full">
+    <footer className="border-t border-brand-primary/20 w-full bg-gradient-to-br from-brand-light via-green-50 to-white">
       <div className="content-container flex flex-col w-full">
         <div className="flex flex-col gap-y-6 xsmall:flex-row items-start justify-between py-40">
           <div>
             <LocalizedClientLink
               href="/"
-              className="txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base uppercase"
+              className="inline-block hover:opacity-80 transition-opacity duration-200 mb-3"
             >
-              Medusa Store
+              <img
+                src="/pictures/ofam-logo.png"
+                alt="OFAM Agro Enterprise"
+                className="h-16 w-auto object-contain"
+              />
             </LocalizedClientLink>
+            <p className="text-brand-dark/70 mt-2 max-w-sm">
+              Premium Agricultural Products & Solutions for modern farming needs.
+            </p>
           </div>
           <div className="text-small-regular gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
             {productCategories && productCategories?.length > 0 && (
               <div className="flex flex-col gap-y-2">
-                <span className="txt-small-plus txt-ui-fg-base">
+                <span className="text-sm font-semibold text-brand-primary">
                   Categories
                 </span>
                 <ul
@@ -46,14 +53,14 @@ export default async function Footer() {
                       })) || null
 
                     return (
-                      <li
-                        className="flex flex-col gap-2 text-ui-fg-subtle txt-small"
+                                              <li
+                        className="flex flex-col gap-2 text-brand-dark/60 text-sm"
                         key={c.id}
                       >
                         <LocalizedClientLink
                           className={clx(
-                            "hover:text-ui-fg-base",
-                            children && "txt-small-plus"
+                            "hover:text-brand-primary transition-colors",
+                            children && "font-medium"
                           )}
                           href={`/categories/${c.handle}`}
                           data-testid="category-link"
@@ -66,7 +73,7 @@ export default async function Footer() {
                               children.map((child) => (
                                 <li key={child.id}>
                                   <LocalizedClientLink
-                                    className="hover:text-ui-fg-base"
+                                    className="hover:text-brand-primary transition-colors text-brand-dark/60"
                                     href={`/categories/${child.handle}`}
                                     data-testid="category-link"
                                   >
@@ -84,12 +91,12 @@ export default async function Footer() {
             )}
             {collections && collections.length > 0 && (
               <div className="flex flex-col gap-y-2">
-                <span className="txt-small-plus txt-ui-fg-base">
+                <span className="text-sm font-semibold text-brand-primary">
                   Collections
                 </span>
                 <ul
                   className={clx(
-                    "grid grid-cols-1 gap-2 text-ui-fg-subtle txt-small",
+                    "grid grid-cols-1 gap-2 text-brand-dark/60 text-sm",
                     {
                       "grid-cols-2": (collections?.length || 0) > 3,
                     }
@@ -98,7 +105,7 @@ export default async function Footer() {
                   {collections?.slice(0, 6).map((c) => (
                     <li key={c.id}>
                       <LocalizedClientLink
-                        className="hover:text-ui-fg-base"
+                        className="hover:text-brand-primary transition-colors"
                         href={`/collections/${c.handle}`}
                       >
                         {c.title}
@@ -109,47 +116,44 @@ export default async function Footer() {
               </div>
             )}
             <div className="flex flex-col gap-y-2">
-              <span className="txt-small-plus txt-ui-fg-base">Medusa</span>
-              <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
+              <span className="text-sm font-semibold text-brand-primary">Company</span>
+              <ul className="grid grid-cols-1 gap-y-2 text-brand-dark/60 text-sm">
                 <li>
-                  <a
-                    href="https://github.com/medusajs"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-ui-fg-base"
+                  <LocalizedClientLink
+                    href="/about"
+                    className="hover:text-brand-primary transition-colors"
                   >
-                    GitHub
-                  </a>
+                    About Us
+                  </LocalizedClientLink>
                 </li>
                 <li>
-                  <a
-                    href="https://docs.medusajs.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-ui-fg-base"
+                  <LocalizedClientLink
+                    href="/contact"
+                    className="hover:text-brand-primary transition-colors"
                   >
-                    Documentation
-                  </a>
+                    Contact
+                  </LocalizedClientLink>
                 </li>
                 <li>
-                  <a
-                    href="https://github.com/medusajs/nextjs-starter-medusa"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-ui-fg-base"
+                  <LocalizedClientLink
+                    href="/services"
+                    className="hover:text-brand-primary transition-colors"
                   >
-                    Source code
-                  </a>
+                    Our Services
+                  </LocalizedClientLink>
                 </li>
               </ul>
             </div>
           </div>
         </div>
-        <div className="flex w-full mb-16 justify-between text-ui-fg-muted">
-          <Text className="txt-compact-small">
-            © {new Date().getFullYear()} Medusa Store. All rights reserved.
+        <div className="flex w-full mb-16 justify-between text-brand-dark/60">
+          <Text className="text-sm">
+            © {new Date().getFullYear()} OFAM Mills. All rights reserved.
           </Text>
-          <MedusaCTA />
+          <div className="text-sm">
+            <span className="text-brand-primary font-medium">Powered by</span>{" "}
+            <span className="text-brand-secondary">Agricultural Excellence</span>
+          </div>
         </div>
       </div>
     </footer>

@@ -2,6 +2,26 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/* Global background to match brand theme */
+body {
+  background: linear-gradient(to bottom right, #FFFAFA, #f0fdf4, #dcfce7);
+  min-height: 100vh;
+}
+
+:root {
+  /* OFAM Brand Colors */
+  --brand-primary: #677D3F;    /* Brand green */
+  --brand-secondary: #F38D27;  /* Brand orange */
+  --brand-dark: #1A1A1A;       /* Brand dark gray/black */
+  --brand-light: #FFFAFA;      /* Brand off-white/cream */
+  
+  /* Semantic color variables */
+  --color-primary: var(--brand-primary);
+  --color-accent: var(--brand-secondary);
+  --color-text-primary: var(--brand-dark);
+  --color-background: var(--brand-light);
+}
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
@@ -108,5 +128,59 @@
 
   .text-3xl-semi {
     @apply text-[32px] leading-[44px] font-semibold;
+  }
+
+  /* Brand color utility classes */
+  .bg-brand-primary {
+    background-color: var(--brand-primary);
+  }
+
+  .bg-brand-secondary {
+    background-color: var(--brand-secondary);
+  }
+
+  .bg-brand-dark {
+    background-color: var(--brand-dark);
+  }
+
+  .bg-brand-light {
+    background-color: var(--brand-light);
+  }
+
+  .text-brand-primary {
+    color: var(--brand-primary);
+  }
+
+  .text-brand-secondary {
+    color: var(--brand-secondary);
+  }
+
+  .text-brand-dark {
+    color: var(--brand-dark);
+  }
+
+  .text-brand-light {
+    color: var(--brand-light);
+  }
+
+  .border-brand-primary {
+    border-color: var(--brand-primary);
+  }
+
+  .border-brand-secondary {
+    border-color: var(--brand-secondary);
+  }
+
+  /* Updated contrast button with brand colors */
+  .contrast-btn {
+    @apply px-4 py-2 border border-brand-primary rounded-full hover:bg-brand-primary hover:text-brand-light transition-colors duration-200 ease-in;
+  }
+
+  .brand-btn-primary {
+    @apply px-4 py-2 bg-brand-primary text-brand-light rounded-full hover:bg-green-600 transition-colors duration-200 ease-in;
+  }
+
+  .brand-btn-secondary {
+    @apply px-4 py-2 bg-brand-secondary text-white rounded-full hover:bg-orange-400 transition-colors duration-200 ease-in;
   }
 }
