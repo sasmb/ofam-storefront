@@ -258,6 +258,7 @@ const PaystackPaymentButton = ({
       // With webhook flow, even if frontend order completion fails,
       // the webhook will complete the order in the background
       setErrorMessage("Payment successful! Your order is being processed. You will receive a confirmation shortly.")
+    } finally {
       setSubmitting(false)
     }
   }

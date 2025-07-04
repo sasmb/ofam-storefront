@@ -27,7 +27,7 @@ export const paymentInfoMap: Record<
     title: "PayPal",
     icon: <PayPal />,
   },
-  "pp_paystack_paystack": {
+  "pp_paystack": {
     title: "Paystack",
     icon: <Paystack />,
   },
