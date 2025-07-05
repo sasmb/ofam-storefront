@@ -1,7 +1,7 @@
 import Medusa from "@medusajs/js-sdk"
 
-// Defaults to standard port for Medusa server
-let MEDUSA_BACKEND_URL = "http://localhost:9000"
+// Defaults to Railway production backend
+let MEDUSA_BACKEND_URL = "https://fortunate-perception-production.up.railway.app"
 
 if (process.env.MEDUSA_BACKEND_URL) {
   MEDUSA_BACKEND_URL = process.env.MEDUSA_BACKEND_URL

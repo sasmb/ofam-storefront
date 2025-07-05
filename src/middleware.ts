@@ -37,10 +37,14 @@ async function getRegionMap(cacheId: string) {
       const json = await response.json()
 
       if (!response.ok) {
-        throw new Error(json.message)
+        console.error('Middleware: Backend response not ok:', response.status, json)
+        throw new Error(json.message || `Backend responded with ${response.status}`)
       }
 
       return json
+    }).catch(error => {
+      console.error('Middleware: Failed to fetch regions:', error)
+      throw error
     })
 
     if (!regions?.length) {
