@@ -244,20 +244,37 @@ const PaystackPaymentButton = ({
   const onSuccess: PaystackCallback = async (response) => {
     console.log("Paystack payment successful:", response)
     setSubmitting(true)
+    setErrorMessage(null)
     
     try {
-      // With webhook-based flow, we just need to place the order
-      // The webhook will handle payment authorization automatically
+      // Step 1: Verify payment with our API route
+      const verifyResponse = await fetch('/api/verify-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reference: response.reference,
+          cartId: cart.id,
+        }),
+      })
+
+      const verifyResult = await verifyResponse.json()
+
+      if (!verifyResult.success) {
+        throw new Error(verifyResult.message || 'Payment verification failed')
+      }
+
+      console.log("✅ Payment verified successfully")
+
+      // Step 2: Place the order (payment session should be authorized by webhook)
       await placeOrder()
       
-      // If we reach here, the order was completed successfully
       console.log("✅ Order completed successfully")
       
-    } catch (error) {
-      console.error("Payment processing:", error)
-      // With webhook flow, even if frontend order completion fails,
-      // the webhook will complete the order in the background
-      setErrorMessage("Payment successful! Your order is being processed. You will receive a confirmation shortly.")
+    } catch (error: any) {
+      console.error("Payment processing error:", error)
+      setErrorMessage(error.message || "Payment failed. Please try again.")
     } finally {
       setSubmitting(false)
     }
